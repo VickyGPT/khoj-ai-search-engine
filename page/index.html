@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gemini AI Chat</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/github-markdown-css/4.0.0/github-markdown.min.css">
+</head>
+<body class="bg-gray-100 min-h-screen flex flex-col justify-center items-center">
+    <h1 class="text-4xl font-bold mb-8">Gemini AI Chat</h1>
+    <div class="w-full max-w-xl bg-white shadow-md rounded-lg p-6">
+        <form id="chat-form" class="mb-6">
+            <label for="user_prompt" class="block text-gray-700 font-semibold mb-2">Enter your prompt:</label>
+            <input type="text" id="user_prompt" name="user_prompt" required class="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:border-blue-500">
+            <button type="submit" class="mt-4 bg-blue-500 text-white font-semibold py-2 px-4 rounded hover:bg-blue-600 focus:outline-none focus:bg-blue-600">Send</button>
+        </form>
+        <div id="full-input" class="markdown-body mb-6"></div>
+        <div id="model-response" class="markdown-body"></div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            $('#chat-form').submit(function(e) {
+                e.preventDefault();
+                var userPrompt = $('#user_prompt').val();
+                $.ajax({
+                    type: 'POST',
+                    url: '',
+                    data: {
+                        'user_prompt': userPrompt,
+                        'csrfmiddlewaretoken': '{{ csrf_token }}'
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#full-input').html('<h2 class="text-xl font-semibold mb-2">Full Input:</h2><p>' + response.full_input + '</p>');
+                        $('#model-response').html('<h2 class="text-xl font-semibold mb-2">Model Response:</h2>' + response.html_model_response);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error(error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
