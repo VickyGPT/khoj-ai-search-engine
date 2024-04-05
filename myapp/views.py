@@ -5,7 +5,7 @@ import google.generativeai as genai
 import markdown2
 
 # Configure Google Generative AI
-genai.configure(api_key="bhai api kyu chaiye tumko")
+genai.configure(api_key="gemini me jake banana")
 
 
 # Set up the model
@@ -104,7 +104,11 @@ def api_response(request):
 
         # Send user query along with text from the API to the model
         if text_from_api:
-            full_input = text_from_api + f" summarize all text based on query {user_query} and make sure you include links you received related to {user_query} in this input."
+            full_input =f" Below is the data from which you have to build an response , the format of the response is in paragraphs  about {user_query} include links in your response ,  here is text summary  " + text_from_api
+
+
+
+
         else:
             # If API response is empty or incomplete, still send some input to the model
             full_input = f" {user_query}"
@@ -115,6 +119,29 @@ def api_response(request):
 
         html_model_response = markdown2.markdown(model_response)
 
-        return JsonResponse({'query': user_query, 'full_input': full_input, 'html_model_response': html_model_response})
+        return JsonResponse({'query': user_query, 'full_input': full_input, 'model_response': html_model_response})
 
     return JsonResponse({'error': 'Invalid request method'})
+
+
+def llama_view(request):
+    # Get the 'q' parameter from the URL
+    query = request.GET.get('q', '')
+
+    # Perform the curl request
+    curl_url = 'https://9e2a-34-67-48-221.ngrok-free.app/api/generate'
+    data = {
+        "model": "llama2",
+        "prompt": query,
+        "stream": False
+    }
+    response = requests.post(curl_url, json=data)
+
+    # Check if the request was successful
+    if response.status_code == 200:
+        # Parse the response JSON and return it
+        output_json = response.json()
+        return JsonResponse(output_json)
+    else:
+        # If request was unsuccessful, return an error message
+        return JsonResponse({"error": "Failed to fetch data"}, status=500)
